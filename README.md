@@ -1,4 +1,4 @@
-# Jakub Korpanty | Portfolio
+# [Jakub Korpanty | Portfolio](https://jakubkor10.github.io)
 
 ## Description
 Personal portfolio website built with HTML, CSS, and JavaScript. Constructed with the use of an AI agent . Features:
