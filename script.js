@@ -27,18 +27,36 @@ if (heroTitle) {
     setTimeout(typeWriter, 500);
 }
 
-// Fetch GitHub projects and display them (without image placeholders)
+// Fetch GitHub projects and display them (with improved error handling for GitHub Pages)
 async function fetchProjects() {
     const projectsGrid = document.getElementById('projects-grid');
     if (!projectsGrid) return;
 
+    // Show loading state
+    projectsGrid.innerHTML = '<p style="color: var(--secondary);">Loading projects...</p>';
+
     try {
         // Fetch repositories from GitHub API (public repos only)
-        const response = await fetch('https://api.github.com/users/jakubkor10/repos?per_page=5&sort=updated');
+        // per_page=5 to ensure we get at least 2 repos even if some are filtered
+        // Add User-Agent header as GitHub API requires it
+        const response = await fetch('https://api.github.com/users/jakubkor10/repos?per_page=5&sort=updated', {
+            headers: {
+                'User-Agent': 'portfolio-website'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('API responded with status: ' + response.status);
+        }
+
         const repos = await response.json();
 
-        // Display first 2 projects
-        const toDisplay = repos.slice(0, 2);
+        // Display first 2 projects (that have names)
+        const toDisplay = repos.filter(repo => repo.name).slice(0, 2);
+
+        if (toDisplay.length === 0) {
+            throw new Error('No repos found with names');
+        }
 
         toDisplay.forEach(repo => {
             const projectCard = document.createElement('div');
@@ -57,8 +75,10 @@ async function fetchProjects() {
         });
     } catch (error) {
         // Fallback if API fails
-        projectsGrid.innerHTML = '<p style="color: var(--secondary);">Unable to load projects. Please try again later.</p>';
         console.error('Error fetching GitHub projects:', error);
+        projectsGrid.innerHTML = '<p style="color: var(--secondary);">Unable to load projects. ' +
+            'This is a known limitation of GitHub Pages. ' +
+            'Check your internet connection or try again later.</p>';
     }
 }
 
