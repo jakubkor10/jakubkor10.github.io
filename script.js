@@ -100,4 +100,6 @@ document.querySelectorAll('.project-card').forEach(card => {
 });
 
 // Load projects on page load
-document.addEventListener('DOMContentLoaded', fetchProjects);
+document.addEventListener('DOMContentLoaded', () => {
+    // Project cards are already in HTML, no API fetch needed
+});
